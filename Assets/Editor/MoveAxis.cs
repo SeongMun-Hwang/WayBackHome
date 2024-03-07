@@ -39,6 +39,16 @@ public class MoveAxis : MonoBehaviour
         MoveSelectedObjects(new Vector3(-0.1f, 0, 0));
     }
 
+    [MenuItem("Custom Tools/Rotate Selected Objects 90¡Æ Clockwise %#r")]
+    static void RotateSelectedObjectsClockwise90()
+    {
+        foreach (GameObject obj in Selection.gameObjects)
+        {
+            Undo.RecordObject(obj.transform, "Rotate 90¡Æ Clockwise");
+            obj.transform.Rotate(0, 90, 0, Space.World);
+        }
+    }
+
     static void MoveSelectedObjects(Vector3 delta)
     {
         foreach (GameObject obj in Selection.gameObjects)
