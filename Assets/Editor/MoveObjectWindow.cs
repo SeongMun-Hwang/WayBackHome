@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,6 +26,16 @@ public class MoveObjectsWindow : EditorWindow
         if (GUILayout.Button("Remove Parent of Selected Objects"))
         {
             RemoveSelectedAndReparentChildren();
+        }
+        //부모 좌표 초기화 및 자식에게 상속
+        if (GUILayout.Button("Relocate Children"))
+        {
+            RelocateChildren();
+        }
+        //블록 정렬
+        if (GUILayout.Button("Align Selected Objects"))
+        {
+            AlignSelectedObjects();
         }
     }
 
@@ -67,4 +78,57 @@ public class MoveObjectsWindow : EditorWindow
             }
         }
     }
+    void RelocateChildren()
+    {
+        foreach (GameObject selectedObj in Selection.gameObjects)
+        {
+            Transform parentTransform = selectedObj.transform;
+
+            // 부모 오브젝트의 원래 위치 저장
+            Vector3 originalParentPosition = parentTransform.position;
+
+            // 자식 오브젝트의 글로벌 위치를 저장할 리스트
+            List<Vector3> childGlobalPositions = new List<Vector3>();
+
+            // 자식 오브젝트의 글로벌 위치 저장
+            for (int i = 0; i < parentTransform.childCount; i++)
+            {
+                childGlobalPositions.Add(parentTransform.GetChild(i).position);
+            }
+
+            // 부모 오브젝트의 위치를 (0, 0, 0)으로 변경
+            Undo.RecordObject(parentTransform, "Reset Parent Position");
+            parentTransform.position = Vector3.zero;
+
+            // 자식 오브젝트의 글로벌 위치를 복원
+            for (int i = 0; i < parentTransform.childCount; i++)
+            {
+                Transform child = parentTransform.GetChild(i);
+                Undo.RecordObject(child, "Relocate Child");
+                child.position = childGlobalPositions[i];
+            }
+        }
+    }
+    void AlignSelectedObjects()
+    {
+        foreach (GameObject obj in Selection.gameObjects)
+        {
+            // 오브젝트의 현재 위치를 가져옴
+            Vector3 currentPosition = obj.transform.position;
+
+            // x와 z 좌표를 반올림하여 정렬
+            float alignedX = Mathf.Round(currentPosition.x);
+            float alignedZ = Mathf.Round(currentPosition.z);
+
+            // y 좌표는 변경하지 않음
+            float alignedY = currentPosition.y;
+
+            // 오브젝트의 위치를 업데이트하기 전에 Undo 기능을 위해 변경을 기록
+            Undo.RecordObject(obj.transform, "Align Objects");
+
+            // 오브젝트의 위치를 업데이트
+            obj.transform.position = new Vector3(alignedX, alignedY, alignedZ);
+        }
+    }
+
 }
