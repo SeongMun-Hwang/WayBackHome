@@ -14,29 +14,38 @@ public class MoveObjectsWindow : EditorWindow
 
     void OnGUI()
     {
+        //값 입력으로 오브젝트 이동
         GUILayout.Label("Move Selected Objects", EditorStyles.boldLabel);
         moveAmount = EditorGUILayout.Vector3Field("Move Amount", moveAmount);
-
         if (GUILayout.Button("Move Objects"))
         {
             MoveSelectedObjects(moveAmount);
         }
+        GUILayout.Space(10);
 
         // 부모를 삭제하는 버튼 추가
+        GUILayout.Label("Remove Object's Parent", EditorStyles.boldLabel);
         if (GUILayout.Button("Remove Parent of Selected Objects"))
         {
             RemoveSelectedAndReparentChildren();
         }
+        GUILayout.Space(10);
+
         //부모 좌표 초기화 및 자식에게 상속
+        GUILayout.Label("Reset Parent's position, keep child", EditorStyles.boldLabel);
         if (GUILayout.Button("Relocate Children"))
         {
             RelocateChildren();
         }
+        GUILayout.Space(10);
+
         //블록 정렬
+        GUILayout.Label("X & Y axis allign", EditorStyles.boldLabel);
         if (GUILayout.Button("Align Selected Objects"))
         {
             AlignSelectedObjects();
         }
+        GUILayout.Space(10);
     }
 
     void MoveSelectedObjects(Vector3 delta)
@@ -49,7 +58,6 @@ public class MoveObjectsWindow : EditorWindow
     }
 
     // 선택된 부모 객체를 삭제하고 자식들을 원래 위치에 유지시키는 함수
-    // 선택된 GameObject를 삭제하고 그 자식들을 상위 부모에게 연결하는 함수
     void RemoveSelectedAndReparentChildren()
     {
         foreach (GameObject selectedObj in Selection.gameObjects)
